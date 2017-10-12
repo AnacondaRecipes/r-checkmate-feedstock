@@ -1,4 +1,4 @@
-{% set version = '1.8.2' %}
+{% set version = '1.8.4' %}
 
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
@@ -12,37 +12,51 @@ source:
   url:
     - https://cran.r-project.org/src/contrib/checkmate_{{ version }}.tar.gz
     - https://cran.r-project.org/src/contrib/Archive/checkmate/checkmate_{{ version }}.tar.gz
-  sha256: 8f182f7894bce100fb2ed4af4487fbf2aceb9bd6d07f8301db549f9ae87b0cff
+  sha256: 6f948883e5a885a1c409d997f0c782e754a549227ec3c8eb18318deceb38f8f6
+
+
+  # patches:
+   # List any patch files here
+   # - fix.patch
 
 build:
+  # If this is a new build for the same version, increment the build number.
   number: 0
-  skip: true  # [win32]
+
+  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
 
+# Suggests: R6, bit, data.table (>= 1.9.8), devtools, ggplot2, knitr, magrittr, microbenchmark, rmarkdown, testthat (>= 0.11.0), tibble
 requirements:
   build:
     - r-base
-    - r-backports
-    - posix                # [win]
-    - {{native}}toolchain  # [win]
-    - gcc                  # [not win]
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - r-backports >=1.1.0
+
   run:
     - r-base
-    - r-backports
-    - libgcc  # [not win]
+    - {{native}}gcc-libs         # [win]
+    - r-backports >=1.1.0
 
 test:
   commands:
-    - $R -e "library('checkmate')"  # [not win]
+    # You can put additional test commands to be run here.
+    - $R -e "library('checkmate')"           # [not win]
     - "\"%R%\" -e \"library('checkmate')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
 
 about:
   home: https://github.com/mllg/checkmate
-  license: BSD_3_clause
-  summary: |
-    Tests and assertions to perform frequent argument checks. A substantial part of the
+  license: BSD_3_clause + file LICENSE
+  summary: Tests and assertions to perform frequent argument checks. A substantial part of the
     package was written in C to minimize any worries about execution time overhead.
   license_family: BSD
 
@@ -50,3 +64,35 @@ extra:
   recipe-maintainers:
     - johanneskoester
     - bgruening
+    - mingwandroid
+
+# The original CRAN metadata for this package was:
+
+# Package: checkmate
+# Type: Package
+# Title: Fast and Versatile Argument Checks
+# Description: Tests and assertions to perform frequent argument checks. A substantial part of the package was written in C to minimize any worries about execution time overhead.
+# Version: 1.8.4
+# Authors@R: c( person("Michel", "Lang", NULL, "michellang@gmail.com", role = c("cre", "aut")), person("Bernd", "Bischl", NULL, "bernd_bischl@gmx.de", role = "ctb") )
+# URL: https://github.com/mllg/checkmate
+# URLNote: https://github.com/mllg/checkmate
+# BugReports: https://github.com/mllg/checkmate/issues
+# NeedsCompilation: yes
+# ByteCompile: yes
+# Encoding: UTF-8
+# Depends: R (>= 3.0.0)
+# Imports: backports (>= 1.1.0), utils
+# Suggests: R6, bit, data.table (>= 1.9.8), devtools, ggplot2, knitr, magrittr, microbenchmark, rmarkdown, testthat (>= 0.11.0), tibble
+# License: BSD_3_clause + file LICENSE
+# VignetteBuilder: knitr
+# RoxygenNote: 6.0.1
+# Collate: 'AssertCollection.R' 'allMissing.R' 'anyInfinite.R' 'anyMissing.R' 'anyNaN.R' 'asInteger.R' 'assert.R' 'helper.R' 'makeExpectation.R' 'makeTest.R' 'makeAssertion.R' 'checkAccess.R' 'checkArray.R' 'checkAtomic.R' 'checkAtomicVector.R' 'checkBit.R' 'checkCharacter.R' 'checkChoice.R' 'checkClass.R' 'checkComplex.R' 'checkCount.R' 'checkDataFrame.R' 'checkDataTable.R' 'checkDate.R' 'checkDirectoryExists.R' 'checkEnvironment.R' 'checkFALSE.R' 'checkFactor.R' 'checkFileExists.R' 'checkFlag.R' 'checkFunction.R' 'checkInt.R' 'checkInteger.R' 'checkIntegerish.R' 'checkList.R' 'checkLogical.R' 'checkMatrix.R' 'checkNamed.R' 'checkNames.R' 'checkNull.R' 'checkNumber.R' 'checkNumeric.R' 'checkOS.R' 'checkPathForOutput.R' 'checkR6.R' 'checkScalar.R' 'checkScalarNA.R' 'checkSetEqual.R' 'checkString.R' 'checkSubset.R' 'checkTRUE.R' 'checkTibble.R' 'checkVector.R' 'coalesce.R' 'isIntegerish.R' 'matchArg.R' 'qassert.R' 'qassertr.R' 'vname.R' 'wfwl.R' 'zzz.R'
+# Packaged: 2017-09-25 19:52:36 UTC; michel
+# Author: Michel Lang [cre, aut], Bernd Bischl [ctb]
+# Maintainer: Michel Lang <michellang@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2017-09-25 22:36:45 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
